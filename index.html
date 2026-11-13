@@ -779,12 +779,14 @@ function stopDemo(){
 function showRewarded(onReward){
   const fail=()=>toast('Реклама сейчас недоступна');
   if(PKB){
+    // рекламы нет — подсказка бесплатно, чтобы игрок не застрял
+    const free=()=>{toast('Рекламы сейчас нет — подсказка бесплатно');onReward();};
     PKB.ads.rewarded.canShow().then(ok=>{
-      if(!ok){fail();return;}
+      if(!ok){free();return;}
       setPaused(true);
       PKB.ads.rewarded.show().then(r=>{setPaused(false);if(r&&r.reward)onReward();else toast('Досмотри рекламу до конца, чтобы получить подсказку');})
-        .catch(()=>{setPaused(false);fail();});
-    }).catch(fail);
+        .catch(()=>{setPaused(false);free();});
+    }).catch(free);
     return;
   }
   try{
